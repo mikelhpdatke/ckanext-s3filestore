@@ -36,11 +36,11 @@ def upload_resources():
     connection = engine.connect()
 
     resource_ids_and_names = {}
-
+    resource_ids_and_pkgID = {}
     try:
         for resource_id, file_path in resource_ids_and_paths.items():
             resource = connection.execute(text('''
-                   SELECT id, url, url_type
+                   SELECT id, url, url_type, package_id
                    FROM resource
                    WHERE id = :id
                '''), id=resource_id)
@@ -49,6 +49,7 @@ def upload_resources():
                 if _type == 'upload' and url:
                     file_name = url.split('/')[-1] if '/' in url else url
                     resource_ids_and_names[_id] = file_name.lower()
+                    resource_ids_and_pkgID[_id] = resource.package_id
     finally:
         connection.close()
         engine.dispose()
@@ -63,8 +64,8 @@ def upload_resources():
 
     uploaded_resources = []
     for resource_id, file_name in resource_ids_and_names.items():
-        key = 'resources/{resource_id}/{file_name}'.format(
-            resource_id=resource_id, file_name=file_name)
+        key = 'packages/{package_id}}/{file_name}'.format(
+            package_id=resource_ids_and_pkgID[resource_id], file_name=file_name)
         s3_connection.Object(bucket_name, key)\
             .put(Body=open(resource_ids_and_paths[resource_id],
                            u'rb'),
