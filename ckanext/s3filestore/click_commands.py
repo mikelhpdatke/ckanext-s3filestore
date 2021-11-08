@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
                           u'from "ckan.storage_path"'
                           u' to the configured s3 bucket')
 def upload_resources():
+    log.debug("!!!!!=========================================")
     storage_path = config.get('ckan.storage_path',
                               '/var/lib/ckan/default/resources')
     sqlalchemy_url = config.get('sqlalchemy.url',
