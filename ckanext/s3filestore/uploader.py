@@ -362,12 +362,12 @@ class S3ResourceUploader(BaseS3Uploader):
     def get_packageid_from_resourceid(self, resource_id):
         try:
             resource = self.connection.execute(text('''
-                    SELECT id, type, package_id
+                    SELECT id, url_type, package_id
                     FROM resource
                     WHERE id = :id
                 '''), id=resource_id)
             if resource.rowcount:
-                id, type, package_id = resource.first()
+                id, url_type, package_id = resource.first()
                 return package_id
         finally:
             self.connection.close()
