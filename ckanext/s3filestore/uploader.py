@@ -206,24 +206,6 @@ class S3Uploader(BaseS3Uploader):
         self.old_filename = old_filename
         if old_filename:
             self.old_filepath = os.path.join(self.storage_path, old_filename)
-        self.sqlalchemy_url = config.get('sqlalchemy.url',
-                                         'postgresql://ckan:ckan@localhost/ckan')
-        self.engine = create_engine(self.sqlalchemy_url)
-        self.connection = self.engine.connect()
-
-    def get_packageid_from_resourceid(self, resource_id):
-        try:
-            resource = self.connection.execute(text('''
-                    SELECT id, type, package_id
-                    FROM resource
-                    WHERE id = :id
-                '''), id=resource_id)
-            if resource.rowcount:
-                id, type, package_id = resource.first()
-                return package_id
-        finally:
-            self.connection.close()
-            self.engine.dispose()
 
     @classmethod
     def get_storage_path(cls, upload_to):
@@ -371,6 +353,25 @@ class S3ResourceUploader(BaseS3Uploader):
                 .get(resource['id'])
             self.old_filename = old_resource.url
             resource['url_type'] = ''
+
+        self.sqlalchemy_url = config.get('sqlalchemy.url',
+                                         'postgresql://ckan:ckan@localhost/ckan')
+        self.engine = create_engine(self.sqlalchemy_url)
+        self.connection = self.engine.connect()
+
+    def get_packageid_from_resourceid(self, resource_id):
+        try:
+            resource = self.connection.execute(text('''
+                    SELECT id, type, package_id
+                    FROM resource
+                    WHERE id = :id
+                '''), id=resource_id)
+            if resource.rowcount:
+                id, type, package_id = resource.first()
+                return package_id
+        finally:
+            self.connection.close()
+            self.engine.dispose()
 
     def get_path(self, id, filename):
         '''Return the key used for this resource in S3.
