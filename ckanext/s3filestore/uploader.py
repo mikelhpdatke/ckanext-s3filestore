@@ -134,7 +134,8 @@ class BaseS3Uploader(object):
                 Body=upload_file.read(),
                 ACL='public-read' if make_public else self.acl,
                 ContentType=getattr(self, 'mimetype', '') or 'text/plain')
-            log.info("Successfully uploaded {0} to S3!".format(filepath))
+            log.info(
+                "Successfully uploaded {0} to S3!??????????????????".format(filepath))
         except Exception as e:
             log.error('Something went very very wrong for {0}'.format(str(e)))
             raise e
