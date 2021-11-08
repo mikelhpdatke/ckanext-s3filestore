@@ -294,7 +294,7 @@ class S3ResourceUploader(BaseS3Uploader):
         super(S3ResourceUploader, self).__init__()
 
         path = config.get('ckanext.s3filestore.aws_storage_path', '')
-        self.storage_path = os.path.join(path, 'packages')
+        self.storage_path = os.path.join(path, 'resources')
         self.filename = None
         self.old_filename = None
 
