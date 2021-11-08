@@ -11,10 +11,11 @@ import botocore
 from botocore.client import Config as BotoConfig
 from botocore.exceptions import ClientError
 import ckantoolkit as toolkit
-from ckanext.s3filestore.click_commands import get_packageid_from_resourceid
 
 import ckan.model as model
 import ckan.lib.munge as munge
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
 if toolkit.check_ckan_version(min_version='2.7.0'):
     from werkzeug.datastructures import FileStorage as FlaskFileStorage
@@ -205,6 +206,24 @@ class S3Uploader(BaseS3Uploader):
         self.old_filename = old_filename
         if old_filename:
             self.old_filepath = os.path.join(self.storage_path, old_filename)
+        self.sqlalchemy_url = config.get('sqlalchemy.url',
+                                         'postgresql://ckan:ckan@localhost/ckan')
+        self.engine = create_engine(self.sqlalchemy_url)
+        self.connection = self.engine.connect()
+
+    def get_packageid_from_resourceid(self, resource_id):
+        try:
+            resource = self.connection.execute(text('''
+                    SELECT id, type, package_id
+                    FROM resource
+                    WHERE id = :id
+                '''), id=resource_id)
+            if resource.rowcount:
+                id, type, package_id = resource.first()
+                return package_id
+        finally:
+            self.connection.close()
+            self.engine.dispose()
 
     @classmethod
     def get_storage_path(cls, upload_to):
@@ -372,7 +391,7 @@ class S3ResourceUploader(BaseS3Uploader):
         # If a filename has been provided (a file is being uploaded) write the
         # file to the appropriate key in the AWS bucket.
         log.debug('Id to Pkg ID {0}'
-                  .format(get_packageid_from_resourceid(id)))
+                  .format(self.get_packageid_from_resourceid(id)))
         if self.filename:
             filepath = self.get_path(id, self.filename)
             self.upload_to_key(filepath, self.upload_file)

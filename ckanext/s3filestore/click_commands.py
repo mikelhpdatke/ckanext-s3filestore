@@ -14,25 +14,6 @@ log = logging.getLogger(__name__)
                short_help=u'Uploads all resources '
                           u'from "ckan.storage_path"'
                           u' to the configured s3 bucket')
-def get_packageid_from_resourceid(resource_id):
-    sqlalchemy_url = config.get('sqlalchemy.url',
-                                'postgresql://ckan:ckan@localhost/ckan')
-    engine = create_engine(sqlalchemy_url)
-    connection = engine.connect()
-    try:
-        resource = connection.execute(text('''
-                SELECT id, type, package_id
-                FROM resource
-                WHERE id = :id
-            '''), id=resource_id)
-        if resource.rowcount:
-            id, type, package_id = resource.first()
-            return package_id
-    finally:
-        connection.close()
-        engine.dispose()
-
-
 def upload_resources():
     log.debug("!!!!!=========================================")
     storage_path = config.get('ckan.storage_path',
