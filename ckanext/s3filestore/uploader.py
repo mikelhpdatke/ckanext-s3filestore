@@ -11,6 +11,7 @@ import botocore
 from botocore.client import Config as BotoConfig
 from botocore.exceptions import ClientError
 import ckantoolkit as toolkit
+from ckanext.s3filestore.click_commands import get_packageid_from_resourceid
 
 import ckan.model as model
 import ckan.lib.munge as munge
@@ -370,6 +371,8 @@ class S3ResourceUploader(BaseS3Uploader):
 
         # If a filename has been provided (a file is being uploaded) write the
         # file to the appropriate key in the AWS bucket.
+        log.debug('Id to Pkg ID {0}'
+                  .format(get_packageid_from_resourceid(id)))
         if self.filename:
             filepath = self.get_path(id, self.filename)
             self.upload_to_key(filepath, self.upload_file)
