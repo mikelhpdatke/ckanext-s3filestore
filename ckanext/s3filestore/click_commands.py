@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from ckantoolkit import config
 from ckanext.s3filestore.uploader import BaseS3Uploader
+import logging
+log = logging.getLogger(__name__)
 
 
 @click.command(u's3-upload',
@@ -66,6 +68,7 @@ def upload_resources():
     for resource_id, file_name in resource_ids_and_names.items():
         key = 'packages/{package_id}}/{file_name}'.format(
             package_id=resource_ids_and_pkgID[resource_id], file_name=file_name)
+        log.info("Key to upload is {0} to S3!".format(key))
         s3_connection.Object(bucket_name, key)\
             .put(Body=open(resource_ids_and_paths[resource_id],
                            u'rb'),
