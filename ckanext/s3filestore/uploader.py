@@ -382,6 +382,7 @@ class S3ResourceUploader(BaseS3Uploader):
         e.g.:
         my_storage_path/resources/165900ba-3c60-43c5-9e9c-9f8acd0aa93f/data.csv
         '''
+        log.debug('debug var: {0} {1}'.format(id, filename))
         directory = self.get_directory(
             self.get_packageid_from_resourceid(id), self.storage_path)
         filepath = os.path.join(directory, filename)
