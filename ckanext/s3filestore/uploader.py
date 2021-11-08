@@ -294,7 +294,7 @@ class S3ResourceUploader(BaseS3Uploader):
         super(S3ResourceUploader, self).__init__()
 
         path = config.get('ckanext.s3filestore.aws_storage_path', '')
-        self.storage_path = os.path.join(path, 'resources')
+        self.storage_path = os.path.join(path, 'packages')
         self.filename = None
         self.old_filename = None
 
@@ -382,7 +382,8 @@ class S3ResourceUploader(BaseS3Uploader):
         e.g.:
         my_storage_path/resources/165900ba-3c60-43c5-9e9c-9f8acd0aa93f/data.csv
         '''
-        directory = self.get_directory(id, self.storage_path)
+        directory = self.get_directory(
+            self.get_packageid_from_resourceid(id), self.storage_path)
         filepath = os.path.join(directory, filename)
         return filepath
 
@@ -391,10 +392,11 @@ class S3ResourceUploader(BaseS3Uploader):
 
         # If a filename has been provided (a file is being uploaded) write the
         # file to the appropriate key in the AWS bucket.
-        log.debug('Id to Pkg ID {0}'
-                  .format(self.get_packageid_from_resourceid(id)))
+
         if self.filename:
             filepath = self.get_path(id, self.filename)
+            log.debug('Filepath for {0} is {1}'
+                      .format(id, filepath))
             self.upload_to_key(filepath, self.upload_file)
 
         # The resource form only sets self.clear (via the input clear_upload)
