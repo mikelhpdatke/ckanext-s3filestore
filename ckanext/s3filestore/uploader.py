@@ -397,8 +397,8 @@ class S3ResourceUploader(BaseS3Uploader):
             # log.debug('Filepath for {0} is {1}'
             #           .format(id, filepath))
             self.upload_to_key(filepath, self.upload_file)
-            self.upload_to_key(self.get_path(
-                'all', self.filename), self.upload_file)
+            # self.upload_to_key(self.get_path(
+            #     'all', self.filename), self.upload_file)
         # The resource form only sets self.clear (via the input clear_upload)
         # to True when an uploaded file is not replaced by another uploaded
         # file, only if it is replaced by a link. If the uploaded file is
