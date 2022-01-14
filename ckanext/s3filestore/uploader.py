@@ -392,7 +392,7 @@ class S3ResourceUploader(BaseS3Uploader):
         # If a filename has been provided (a file is being uploaded) write the
         # file to the appropriate key in the AWS bucket.
 
-        if self.filename:
+        if self.filename and '[lamda]' not in self.filename:
             filepath = self.get_path(id, self.filename)
             # log.debug('Filepath for {0} is {1}'
             #           .format(id, filepath))
