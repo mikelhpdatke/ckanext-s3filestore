@@ -196,7 +196,7 @@ class S3Uploader(BaseS3Uploader):
         super(S3Uploader, self).__init__()
 
         self.storage_path = self.get_storage_path(upload_to)
-
+        self.mimetype = 'image'
         self.filename = None
         self.filepath = None
 

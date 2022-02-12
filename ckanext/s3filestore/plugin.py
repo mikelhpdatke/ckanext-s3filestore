@@ -56,10 +56,10 @@ class S3FileStorePlugin(plugins.SingletonPlugin):
         '''Return an uploader object used to upload resource files.'''
         return ckanext.s3filestore.uploader.S3ResourceUploader(data_dict)
 
-    # def get_uploader(self, upload_to, old_filename=None):
-    #     '''Return an uploader object used to upload general files.'''
-    #     return ckanext.s3filestore.uploader.S3Uploader(upload_to,
-    #                                                    old_filename)
+    def get_uploader(self, upload_to, old_filename=None):
+        '''Return an uploader object used to upload general files.'''
+        return ckanext.s3filestore.uploader.S3Uploader(upload_to,
+                                                       old_filename)
 
     # IBlueprint
 
